@@ -147,5 +147,6 @@ AUTH_USER_MODEL = 'accounts.User'
 
 #Para permitir la autenticación con email en lugar de username
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
+    'accounts.backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend', # Para el admin
 ]

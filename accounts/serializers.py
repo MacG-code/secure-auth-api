@@ -10,41 +10,35 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ['email', 'username', 'password']
 
     def create(self, validated_data):
-        user = User.objects.create_user(
-            email=validated_data['email'],
-            username=validated_data['username'],
-            password=validated_data['password']
-        )
+        password = validated_data.pop('password')
+
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+
         return user
     
-# Registro
-class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = User
-        fields = ['email', 'username', 'password']
-
-        def create(self, validated_data):
-            user = user.objects.create_user(**validated_data)
-            return user
-        
 # Logueo
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        email = data.get('email')
-        password = data.get('password')
+        email = data.get("email")
+        password = data.get("password")
 
-        user = authenticate(email=email, password=password)
-
-        if not user:
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
             raise serializers.ValidationError("Invalid email or password")
 
-        data['user'] = user
-        return data
+        if not user.check_password(password):
+            raise serializers.ValidationError("Invalid email or password")
+
+        if not user.is_active:
+            raise serializers.ValidationError("User is inactive")
+
+        return user
     
 #Perfil
 class UserSerializer(serializers.ModelSerializer):
