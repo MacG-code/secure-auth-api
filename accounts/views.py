@@ -13,6 +13,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
+
+
+
 # Generar tokens
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -67,3 +70,19 @@ class ProfileView(APIView):
         return Response({
             'user': UserSerializer(user).data
         }, status=status.HTTP_200_OK)
+
+
+# Logout
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()  # invalida el token con blacklist
+
+            return Response({"message": "Logout exitoso"}, status=status.HTTP_205_RESET_CONTENT)
+
+        except Exception:
+            return Response({"error": "Token inválido"}, status=status.HTTP_400_BAD_REQUEST)    

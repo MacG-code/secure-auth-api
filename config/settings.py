@@ -43,6 +43,9 @@ INSTALLED_APPS = [
 
     #local apps
     'accounts',
+
+    #blacklist de tokens para logout
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
