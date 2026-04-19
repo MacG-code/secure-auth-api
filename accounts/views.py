@@ -1,10 +1,11 @@
 from django.shortcuts import render
 
-# Create your views here.
 from rest_framework import generics
 from .models import User
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer, UserSerializer
 
+
+# Para registros, login y logout
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -13,7 +14,25 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
+# Para permisos de roles
+from .permissions import IsAdminUserRole 
+from rest_framework.generics import ListAPIView
 
+from rest_framework.generics import RetrieveUpdateAPIView
+from .permissions import IsOwnerOrAdmin
+
+
+# Para listar usuarios (solo admin)
+class UserListView(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminUserRole]
+
+# Para ver perfil
+class UserDetailView(RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsOwnerOrAdmin]
 
 
 # Generar tokens
@@ -80,7 +99,7 @@ class LogoutView(APIView):
         try:
             refresh_token = request.data["refresh"]
             token = RefreshToken(refresh_token)
-            token.blacklist()  # invalida el token con blacklist
+            token.blacklist()  # invalida el token con blaclist
 
             return Response({"message": "Logout exitoso"}, status=status.HTTP_205_RESET_CONTENT)
 
