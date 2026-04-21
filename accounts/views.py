@@ -21,6 +21,14 @@ from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveUpdateAPIView
 from .permissions import IsOwnerOrAdmin
 
+# Para generar token seguro para restablecer contraseña
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+
+# Para restablecer contraseña
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
 
 # Para listar usuarios (solo admin)
 class UserListView(ListAPIView):
@@ -33,6 +41,7 @@ class UserDetailView(RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsOwnerOrAdmin]
+
 
 
 # Generar tokens
@@ -105,3 +114,46 @@ class LogoutView(APIView):
 
         except Exception:
             return Response({"error": "Token inválido"}, status=status.HTTP_400_BAD_REQUEST)    
+
+
+
+# Generar token seguro para restablecer contraseña
+token_generator = PasswordResetTokenGenerator()
+
+class RequestPasswordResetView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=404)
+
+        uid = urlsafe_base64_encode(force_bytes(user.id)) # Codifica el ID del usuario
+        token = token_generator.make_token(user) # Genera un token único para el usuario 
+
+        reset_link = f"http://localhost:8000/api/reset-password/{uid}/{token}/" # Genera el enlace de restablecimiento
+
+        return Response({
+            "message": "Password reset link generated",
+            "reset_link": reset_link
+        })
+
+
+# Restablecer contraseña
+class PasswordResetConfirmView(APIView):
+    def post(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(id=uid)
+        except:
+            return Response({"error": "Invalid link"}, status=400)
+
+        if not token_generator.check_token(user, token):
+            return Response({"error": "Invalid or expired token"}, status=400)
+
+        new_password = request.data.get("new_password")
+        user.set_password(new_password)
+        user.save()
+
+        return Response({"message": "Password reset successful"})

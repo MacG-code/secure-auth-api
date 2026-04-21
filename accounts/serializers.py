@@ -32,9 +32,11 @@ class LoginSerializer(serializers.Serializer):
         except User.DoesNotExist:
             raise serializers.ValidationError("Invalid email or password")
 
+        # valida la password
         if not user.check_password(password):
             raise serializers.ValidationError("Invalid email or password")
 
+        # valida si el usuario esta activo
         if not user.is_active:
             raise serializers.ValidationError("User is inactive")
 
