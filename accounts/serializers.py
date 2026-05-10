@@ -39,6 +39,10 @@ class LoginSerializer(serializers.Serializer):
         # valida si el usuario esta activo
         if not user.is_active:
             raise serializers.ValidationError("User is inactive")
+        
+        # bloquear si no esta veificada la cuenta con email
+        if not user.is_verified:
+            raise serializers.ValidationError("Email not verified")
 
         return user
     

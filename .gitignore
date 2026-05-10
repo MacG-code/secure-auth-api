@@ -2,19 +2,30 @@
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
 
 # Django
 *.log
 
-# Entorno virtual
+# Virtual environments
 venv/
 env/
 
-# Variables sensibles
+# Environment variables
 .env
 
 # VS Code
 .vscode/
 
-# OS
+# OS files
 .DS_Store
+
+# Testing
+.pytest_cache/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Migrations cache
+*.sqlite3

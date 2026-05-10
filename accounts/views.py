@@ -30,6 +30,14 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 
+# Para enviar email
+from django.core.mail import send_mail
+from django.conf import settings
+
+
+# -------------------------------------------------------------
+# -------------------------------------------------------------
+
 # Para listar usuarios (solo admin)
 class UserListView(ListAPIView):
     queryset = User.objects.all()
@@ -55,20 +63,53 @@ def get_tokens_for_user(user):
 
 
 # Registro
+email_token_generator = PasswordResetTokenGenerator() # genera token de verificacion
+
+
 class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
 
         if serializer.is_valid():
             user = serializer.save()
-            tokens = get_tokens_for_user(user)
+            
+            #generar UID y token
+            uid = urlsafe_base64_encode(force_bytes(user.id))
+            token = email_token_generator.make_token(user)
 
+            # link para verificación
+            verification_link = f"http://127.0.0.1:8000/api/verify-email/{uid}/{token}/"
+
+            send_mail(
+                subject='Verify your account',
+                message=f'Click here to verify your account: {verification_link}',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
             return Response({
-                'user': UserSerializer(user).data,
-                'tokens': tokens
-            }, status=status.HTTP_201_CREATED)
+                "message": "User created. Verify your email.",
+                "verification_link": verification_link
+            })
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
+
+# verificar email
+class VerifyEmailView(APIView):
+    def get(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(id=uid)
+        except:
+            return Response({"error": "Invalid link"}, status=400)
+
+        if not email_token_generator.check_token(user, token):
+            return Response({"error": "Invalid or expired token"}, status=400)
+
+        user.is_verified = True
+        user.save()
+
+        return Response({"message": "Email verified successfully"})
 
 
 # Login

@@ -1,7 +1,7 @@
 from accounts.views import UserDetailView
 from accounts.views import UserListView
 from django.urls import path
-from .views import RegisterView, LoginView, ProfileView, LogoutView, RequestPasswordResetView, PasswordResetConfirmView
+from .views import RegisterView, LoginView, ProfileView, LogoutView, RequestPasswordResetView, PasswordResetConfirmView, VerifyEmailView
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
@@ -14,4 +14,5 @@ urlpatterns = [
     path('users/<int:pk>/', UserDetailView.as_view()),
     path('request-reset/', RequestPasswordResetView.as_view()),
     path('reset-password/<uidb64>/<token>/', PasswordResetConfirmView.as_view()),
+    path('verify-email/<uidb64>/<token>/', VerifyEmailView.as_view()),
 ]
