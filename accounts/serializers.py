@@ -51,3 +51,32 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'username', 'role', 'created_at']
+
+
+#tokens
+class TokenResponseSerializer(serializers.Serializer):
+    access = serializers.CharField()
+    refresh = serializers.CharField()
+
+#logout
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
+#resetear contraseña
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+#confirmar reset de contraseña
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+
+        if data["password"] != data["confirm_password"]:
+            raise serializers.ValidationError(
+                "Passwords do not match"
+            )
+
+        return data

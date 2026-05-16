@@ -1,15 +1,17 @@
 # Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Django
-*.log
+*.py[cod]
+*$py.class
 
 # Virtual environments
 venv/
 env/
+.venv/
+
+# Django
+*.log
+db.sqlite3
+media/
 
 # Environment variables
 .env
@@ -17,15 +19,27 @@ env/
 # VS Code
 .vscode/
 
-# OS files
+# macOS
 .DS_Store
 
-# Testing
+# Windows
+Thumbs.db
+
+# Staticfiles
+staticfiles/
+
+# Pytest
 .pytest_cache/
 
-# Coverage
-.coverage
-htmlcov/
-
 # Migrations cache
-*.sqlite3
+*.pyc
+
+# Coverage
+htmlcov/
+.coverage
+
+# mypy
+.mypy_cache/
+
+# IDEs
+.idea/

@@ -48,6 +48,9 @@ INSTALLED_APPS = [
 
     #blacklist de tokens para logout
     'rest_framework_simplejwt.token_blacklist',
+
+    #openapi
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -134,9 +137,37 @@ STATIC_URL = 'static/'
 
 #Configurar Django REST Framework
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+
+    # Configuración de Spectacular
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
     ],
+
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '20/minute', #usuarios sin login
+        'user': '100/minute', #usuarios autenticados
+        'login': '5/minute', #peticiones de login 5 intentos por minuto
+        'register': '3/minute', #peticiones de registro 3 intentos por minuto
+    },
+}
+
+
+#Configurar Spectacular
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Secure Authentication API',
+    'DESCRIPTION': 'Professional Authentication API with Django REST Framework and JWT',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
 
 #Configurar JWT
@@ -160,8 +191,8 @@ AUTHENTICATION_BACKENDS = [
 # Configuración de Email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST')
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS')
 
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')

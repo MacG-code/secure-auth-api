@@ -9,7 +9,7 @@ from .serializers import RegisterSerializer, UserSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
+from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, TokenResponseSerializer, LogoutSerializer, PasswordResetRequestSerializer, PasswordResetConfirmSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -34,6 +34,14 @@ from django.utils.encoding import force_str
 from django.core.mail import send_mail
 from django.conf import settings
 
+#para vistas publicas
+from rest_framework.permissions import AllowAny
+
+# Para throttling
+from .throttles import LoginThrottle, RegisterThrottle
+
+# Para documentacion swagger
+from drf_spectacular.utils import extend_schema
 
 # -------------------------------------------------------------
 # -------------------------------------------------------------
@@ -65,8 +73,13 @@ def get_tokens_for_user(user):
 # Registro
 email_token_generator = PasswordResetTokenGenerator() # genera token de verificacion
 
-
+@extend_schema(
+    request=RegisterSerializer,
+    responses=TokenResponseSerializer
+)
 class RegisterView(APIView):
+    permission_classes = [AllowAny]
+    throttle_classes = [RegisterThrottle]
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
 
@@ -96,6 +109,7 @@ class RegisterView(APIView):
 
 # verificar email
 class VerifyEmailView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, uidb64, token):
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
@@ -113,8 +127,14 @@ class VerifyEmailView(APIView):
 
 
 # Login
+@extend_schema(
+    request=LoginSerializer,
+    responses=TokenResponseSerializer
+)
 class LoginView(APIView):
-    
+    permission_classes = [AllowAny]
+    throttle_classes = [LoginThrottle]
+
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
 
@@ -130,7 +150,11 @@ class LoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 # Perfil
+@extend_schema(
+    responses=UserSerializer
+)
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -142,6 +166,10 @@ class ProfileView(APIView):
 
 
 # Logout
+@extend_schema(
+    request=LogoutSerializer,
+    responses={200: None}
+)
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -161,7 +189,22 @@ class LogoutView(APIView):
 # Generar token seguro para restablecer contraseña
 token_generator = PasswordResetTokenGenerator()
 
+@extend_schema(
+    tags=["Authentication"],
+    request=PasswordResetRequestSerializer,
+    responses={
+        200: {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+)
 class RequestPasswordResetView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         email = request.data.get("email")
 
@@ -182,7 +225,22 @@ class RequestPasswordResetView(APIView):
 
 
 # Restablecer contraseña
+@extend_schema(
+    tags=["Authentication"],
+    request=PasswordResetConfirmSerializer,
+    responses={
+        200: {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+)
 class PasswordResetConfirmView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, uidb64, token):
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
