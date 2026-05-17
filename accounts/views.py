@@ -179,7 +179,7 @@ class LogoutView(APIView):
             token = RefreshToken(refresh_token)
             token.blacklist()  # invalida el token con blaclist
 
-            return Response({"message": "Logout exitoso"}, status=status.HTTP_205_RESET_CONTENT)
+            return Response({"message": "Logout exitoso"}, status=status.HTTP_200_OK)
 
         except Exception:
             return Response({"error": "Token inválido"}, status=status.HTTP_400_BAD_REQUEST)    
