@@ -9,7 +9,7 @@ from .serializers import RegisterSerializer, UserSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, TokenResponseSerializer, LogoutSerializer, PasswordResetRequestSerializer, PasswordResetConfirmSerializer, ChangePasswordSerializer, UpdateProfileSerializer
+from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, TokenResponseSerializer, LogoutSerializer, PasswordResetRequestSerializer, PasswordResetConfirmSerializer, ChangePasswordSerializer, UpdateProfileSerializer, DeleteAccountSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -102,14 +102,14 @@ class RegisterView(APIView):
             verification_link = f"http://127.0.0.1:8000/api/verify-email/{uid}/{token}/"
 
             send_mail(
-                subject='Verify your account',
-                message=f'Click here to verify your account: {verification_link}',
+                subject='Verifica tu cuenta',
+                message=f'Haz clic aquí para verificar tu cuenta: {verification_link}',
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
                 fail_silently=False,
             )
             return Response({
-                "message": "User created. Verify your email.",
+                "message": "Usuario creado. Por favor verifica tu correo electrónico.",
                 "verification_link": verification_link
             })
         
@@ -123,15 +123,15 @@ class VerifyEmailView(APIView):
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(id=uid)
         except:
-            return Response({"error": "Invalid link"}, status=400)
+            return Response({"error": "Enlace inválido"}, status=400)
 
         if not email_token_generator.check_token(user, token):
-            return Response({"error": "Invalid or expired token"}, status=400)
+            return Response({"error": "Token inválido o expirado"}, status=400)
 
         user.is_verified = True
         user.save()
 
-        return Response({"message": "Email verified successfully"})
+        return Response({"message": "Correo electrónico verificado exitosamente"})
 
 
 # Login
@@ -219,7 +219,7 @@ class RequestPasswordResetView(APIView):
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=404)
+            return Response({"error": "Usuario no encontrado"}, status=404)
 
         uid = urlsafe_base64_encode(force_bytes(user.id)) # Codifica el ID del usuario
         token = token_generator.make_token(user) # Genera un token único para el usuario 
@@ -227,7 +227,7 @@ class RequestPasswordResetView(APIView):
         reset_link = f"http://localhost:8000/api/reset-password/{uid}/{token}/" # Genera el enlace de restablecimiento
 
         return Response({
-            "message": "Password reset link generated",
+            "message": "Enlace de restablecimiento de contraseña generado",
             "reset_link": reset_link
         })
 
@@ -254,16 +254,16 @@ class PasswordResetConfirmView(APIView):
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(id=uid)
         except:
-            return Response({"error": "Invalid link"}, status=400)
+            return Response({"error": "Enlace inválido"}, status=400)
 
         if not token_generator.check_token(user, token):
-            return Response({"error": "Invalid or expired token"}, status=400)
+            return Response({"error": "Enlace inválido o expirado"}, status=400)
 
         new_password = request.data.get("new_password")
         user.set_password(new_password)
         user.save()
 
-        return Response({"message": "Password reset successful"})
+        return Response({"message": "Contraseña restablecida correctamente"})
 
 
 # cambiar contraseña de un usuario autenticado 
@@ -294,7 +294,7 @@ class ChangePasswordView(APIView):
         if not user.check_password(old_password):
 
             return Response({
-                "error": "Old password is incorrect"
+                "error": "Contraseña incorrecta"
             }, status=status.HTTP_400_BAD_REQUEST)
 
         user.set_password(new_password)
@@ -302,7 +302,7 @@ class ChangePasswordView(APIView):
         user.save()
 
         return Response({
-            "message": "Password changed successfully"
+            "message": "Contraseña actualizada correctamente"
         }, status=status.HTTP_200_OK)
 
 
@@ -326,7 +326,7 @@ class UpdateProfileView(APIView):
             serializer.save()
 
             return Response({
-                "message": "Profile updated successfully",
+                "message": "Perfil actualizado correctamente",
                 "data": serializer.data
             })
 
@@ -334,3 +334,38 @@ class UpdateProfileView(APIView):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
+
+# eliminar cuenta de usuario autenticado
+class DeleteAccountView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    serializer_class = DeleteAccountSerializer
+
+    def post(self, request):
+
+        serializer = DeleteAccountSerializer(
+            data=request.data
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+        password = serializer.validated_data[
+            'password'
+        ]
+
+        user = request.user
+
+        if not user.check_password(password):
+
+            return Response({
+                "error": "Contraseña incorrecta"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        user.delete()
+
+        return Response({
+            "message": "Cuenta eliminada correctamente"
+        }, status=status.HTTP_200_OK)

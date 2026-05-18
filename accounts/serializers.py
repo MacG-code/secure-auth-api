@@ -101,3 +101,11 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'email']
+
+
+# para eliminar la cuenta, pedir la contraseña para verificar que es el usuario
+class DeleteAccountSerializer(serializers.Serializer):
+
+    password = serializers.CharField(
+        write_only=True
+    )
