@@ -9,7 +9,7 @@ from .serializers import RegisterSerializer, UserSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, TokenResponseSerializer, LogoutSerializer, PasswordResetRequestSerializer, PasswordResetConfirmSerializer
+from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, TokenResponseSerializer, LogoutSerializer, PasswordResetRequestSerializer, PasswordResetConfirmSerializer, ChangePasswordSerializer, UpdateProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -43,8 +43,15 @@ from .throttles import LoginThrottle, RegisterThrottle
 # Para documentacion swagger
 from drf_spectacular.utils import extend_schema
 
+
+# Para tokens de verificación de correo electrónico
+from .tokens import email_verification_token
+from django.contrib.auth import get_user_model
+
+
 # -------------------------------------------------------------
 # -------------------------------------------------------------
+
 
 # Para listar usuarios (solo admin)
 class UserListView(ListAPIView):
@@ -85,6 +92,7 @@ class RegisterView(APIView):
 
         if serializer.is_valid():
             user = serializer.save()
+            
             
             #generar UID y token
             uid = urlsafe_base64_encode(force_bytes(user.id))
@@ -256,3 +264,73 @@ class PasswordResetConfirmView(APIView):
         user.save()
 
         return Response({"message": "Password reset successful"})
+
+
+# cambiar contraseña de un usuario autenticado 
+class ChangePasswordView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    serializer_class = ChangePasswordSerializer
+
+    def post(self, request):
+
+        serializer = ChangePasswordSerializer(
+            data=request.data
+        )
+
+        serializer.is_valid(raise_exception=True)
+
+        user = request.user
+
+        old_password = serializer.validated_data[
+            'old_password'
+        ]
+
+        new_password = serializer.validated_data[
+            'new_password'
+        ]
+
+        if not user.check_password(old_password):
+
+            return Response({
+                "error": "Old password is incorrect"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+
+        user.save()
+
+        return Response({
+            "message": "Password changed successfully"
+        }, status=status.HTTP_200_OK)
+
+
+# actualizar perfil de un usuario autenticado 
+class UpdateProfileView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    serializer_class = UpdateProfileSerializer
+
+    def put(self, request):
+
+        serializer = UpdateProfileSerializer(
+            request.user,
+            data=request.data,
+            partial=True
+        )
+
+        if serializer.is_valid():
+
+            serializer.save()
+
+            return Response({
+                "message": "Profile updated successfully",
+                "data": serializer.data
+            })
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )

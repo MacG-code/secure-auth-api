@@ -36,14 +36,14 @@ class LoginSerializer(serializers.Serializer):
         if not user.check_password(password):
             raise serializers.ValidationError("Invalid email or password")
 
-        # valida si el usuario esta activo
-        if not user.is_active:
-            raise serializers.ValidationError("User is inactive")
-        
         # bloquear si no esta veificada la cuenta con email
         if not user.is_verified:
             raise serializers.ValidationError("Email not verified")
 
+        # valida si el usuario esta activo
+        if not user.is_active:
+            raise serializers.ValidationError("User is inactive")
+        
         return user
     
 #Perfil
@@ -80,3 +80,24 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
             )
 
         return data
+
+# para cambiar contraseña del usuario (actual y nueva)
+class ChangePasswordSerializer(serializers.Serializer):
+
+    old_password = serializers.CharField(
+        write_only=True
+    )
+
+    new_password = serializers.CharField(
+        write_only=True,
+        min_length=8
+    )
+
+
+
+# actualizar perfil (email y username) del usuario autenticado
+class UpdateProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['username', 'email']
