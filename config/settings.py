@@ -51,6 +51,9 @@ INSTALLED_APPS = [
 
     #openapi
     'drf_spectacular',
+
+    #filter
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -166,6 +169,12 @@ REST_FRAMEWORK = {
         'rest_framework.pagination.PageNumberPagination',
 
     'PAGE_SIZE': 5,
+
+    #Filtros
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+    ],
 }
 
 

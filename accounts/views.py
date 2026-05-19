@@ -54,16 +54,21 @@ from django.contrib.auth import get_user_model
 
 
 # Para listar usuarios (solo admin)
-class UserListView(ListAPIView):                                                            # vista para listar usuarios     
-    queryset = User.objects.all()                                                           # obtengo todos los usuarios     
-    serializer_class = UserSerializer                                                       # serializo los usuarios       
-    permission_classes = [IsAdminUserRole]                                                # solo admin puede ver usuarios  
+class UserListView(ListAPIView):                                       # vista para listar usuarios     
+    queryset = User.objects.all()                                      # obtengo todos los usuarios     
+    serializer_class = UserSerializer                                  # serializo los usuarios       
+    permission_classes = [IsAdminUserRole]                             # solo admin puede ver usuarios  
+
+
+    filterset_fields = ['role']                                        #filtro por rol
+    search_fields = ['username', 'email']                              #filtro por nombre y email
+
 
 # Para ver perfil
-class UserDetailView(RetrieveUpdateAPIView):                                            # vista para ver perfil         
-    queryset = User.objects.all()                                                           # obtengo todos los usuarios     
-    serializer_class = UserSerializer                                                       # serializo los usuarios       
-    permission_classes = [IsOwnerOrAdmin]                                               # solo el dueño o admin puede ver el perfil
+class UserDetailView(RetrieveUpdateAPIView):                           # vista para ver perfil         
+    queryset = User.objects.all()                                      # obtengo todos los usuarios     
+    serializer_class = UserSerializer                                  # serializo los usuarios       
+    permission_classes = [IsOwnerOrAdmin]                              # solo el dueño o admin puede ver el perfil
 
 
 
