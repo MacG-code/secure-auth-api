@@ -159,6 +159,13 @@ REST_FRAMEWORK = {
         'login': '5/minute', #peticiones de login 5 intentos por minuto
         'register': '3/minute', #peticiones de registro 3 intentos por minuto
     },
+
+    # paginación de usuarios
+    # 
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.PageNumberPagination',
+
+    'PAGE_SIZE': 5,
 }
 
 
