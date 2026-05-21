@@ -48,14 +48,17 @@ from drf_spectacular.utils import extend_schema
 from .tokens import email_verification_token
 from django.contrib.auth import get_user_model
 
+# logger para usuarios
+import logging
 
 # -------------------------------------------------------------
 # -------------------------------------------------------------
 
+logger = logging.getLogger('security')  # logger para usuarios
 
 # Para listar usuarios (solo admin)
 class UserListView(ListAPIView):                                       # vista para listar usuarios     
-    queryset = User.objects.all()                                      # obtengo todos los usuarios     
+    queryset = User.objects.all().order_by('id')                       # obtengo todos los usuarios ordenados por id    
     serializer_class = UserSerializer                                  # serializo los usuarios       
     permission_classes = [IsAdminUserRole]                             # solo admin puede ver usuarios  
 
@@ -112,6 +115,10 @@ class RegisterView(APIView):                                                    
                 recipient_list=[user.email],                                                    # correo del destinatario
                 fail_silently=False,                                                            # silencio errores
             )
+            logger.info(                                                                    # log del usuario
+                f'Nuevo usuario registrado: {user.email}'
+            )
+            
             return Response({
                 "message": "Usuario creado. Por favor verifica tu correo electrónico.",       # mensaje de registro
                 "verification_link": verification_link                                         # link de verificacion
@@ -133,6 +140,11 @@ class VerifyEmailView(APIView):                                                 
             return Response({"error": "Token inválido o expirado"}, status=400)               # respuesta si el token es invalido
 
         user.is_verified = True                                                             # marco el usuario como verificado
+        
+        logger.info(                                                                        # log del usuario
+            f'Email verificado: {user.email}'
+        )
+
         user.save()                                                                         # guardo el usuario
 
         return Response({"message": "Correo electrónico verificado exitosamente"})          # respuesta exitosa
@@ -153,6 +165,10 @@ class LoginView(APIView):                                                       
         if serializer.is_valid():                                                          # valido que los datos sean validos
             user = serializer.validated_data                                               # obtengo los datos validados
             tokens = get_tokens_for_user(user)                                             # obtengo los tokens
+            
+            logger.info(                                                                   # log del usuario
+                f'Usuario {user.email} ha iniciado sesion correctamente'
+            )
 
             return Response({
                 'user': UserSerializer(user).data,                                           # devuelvo el usuario
@@ -191,6 +207,9 @@ class LogoutView(APIView):  # cerrar sesion
             token = RefreshToken(refresh_token)
             token.blacklist()  # invalida el token con blaclist
 
+            logger.info(                                                                   # log del usuario
+                f'Usuario {request.user.email} ha cerrado sesion correctamente'
+            )
             return Response({"message": "Logout exitoso"}, status=status.HTTP_200_OK)        # mensaje de confirmacion
 
         except Exception:
@@ -265,6 +284,11 @@ class PasswordResetConfirmView(APIView):
 
         new_password = request.data.get("new_password")                         # obtengo la nueva contraseña
         user.set_password(new_password)                                         # establezco la nueva contraseña
+
+        logger.info(                                                                        # log del usuario
+            f'Usuario {user.email} restableció su contraseña'
+        )
+
         user.save()                                                             # guardo el perfil
 
         return Response({"message": "Contraseña restablecida correctamente"}, status=status.HTTP_200_OK)  # devuelvo un mensaje con estatus 200 ok 
@@ -306,7 +330,14 @@ class ChangePasswordView(APIView):
 
         user.save()                                          # guardo el perfil
 
-        return Response({                                     # devuelvo un mensaje con estatus 200 ok 
+        tokens = get_tokens_for_user(user)                     # obtengo los tokens
+        
+        logger.info(                                         # log del usuario
+            f'Usuario {request.user.email} cambio su contraseña'
+        )
+        
+        return Response({
+            "tokens": tokens,                                # devuelvo los tokens y un mensaje con estatus 200 ok 
             "message": "Contraseña actualizada correctamente"
         }, status=status.HTTP_200_OK)
 
@@ -329,6 +360,10 @@ class UpdateProfileView(APIView):
         if serializer.is_valid():                  # si es valido lanzo error con raise_exception=True 
 
             serializer.save()                      # si es valido guardo el perfil
+
+            logger.info(                                         # log del usuario
+                f'Usuario {request.user.email} actualizó su perfil'
+            )
 
             return Response({                      # y devuelvo un mensaje 
                 "message": "Perfil actualizado correctamente",
@@ -369,7 +404,10 @@ class DeleteAccountView(APIView):
                 "error": "Contraseña incorrecta" # mensaje de error
             }, status=status.HTTP_400_BAD_REQUEST) # status 400 bad request
 
-        user.delete() # elimina la cuenta
+        logger.info(                            # log del usuario
+            f'Usuario {user.email} ha eliminado su cuenta'
+        )
+        user.delete()                           # elimina la cuenta
 
         return Response({                     # y devuelve un mensaje con status 200
             "message": "Cuenta eliminada correctamente"

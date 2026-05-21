@@ -214,3 +214,41 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+import os
+
+#Configurar logs de seguridad para usuarios y evitar errores
+LOGGING = {
+
+    'version': 1,
+
+    'disable_existing_loggers': False,
+
+    'handlers': {
+
+        'file': {
+
+            'level': 'INFO',
+
+            'class': 'logging.FileHandler',
+
+            'filename': os.path.join(
+                BASE_DIR,
+                'logs/security.log'
+            ),
+        },
+    },
+
+    'loggers': {
+
+        'security': {
+
+            'handlers': ['file'],
+
+            'level': 'INFO',
+
+            'propagate': True,
+        },
+    },
+}
