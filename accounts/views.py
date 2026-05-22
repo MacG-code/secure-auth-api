@@ -122,7 +122,9 @@ class RegisterView(APIView):                                                    
             return Response({
                 "message": "Usuario creado. Por favor verifica tu correo electrónico.",       # mensaje de registro
                 "verification_link": verification_link                                         # link de verificacion
-            })
+            }, 
+            status=status.HTTP_201_CREATED
+            )
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)            # respuesta si los datos no son validos
 

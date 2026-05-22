@@ -7,8 +7,8 @@ from django.urls import path
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
-    path('login/', LoginView.as_view()),
-    path('profile/', ProfileView.as_view()),
+    path('login/', LoginView.as_view(), name='login'),
+    path('profile/', ProfileView.as_view(), name='profile'),
     path('token/refresh', TokenRefreshView.as_view()),
     path('logout/', LogoutView.as_view()),
     path('users/', UserListView.as_view()),
