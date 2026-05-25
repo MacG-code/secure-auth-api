@@ -1,6 +1,16 @@
 # 🔐 Secure Authentication API
 
-API de autenticación segura desarrollada con Django REST Framework, enfocada en seguridad, autenticación JWT y buenas prácticas backend.
+API de autenticación segura desarrollada con Django REST Framework enfocada en buenas prácticas backend, autenticación JWT, seguridad y gestión de usuarios.
+
+Diseñada como un proyecto backend profesional para demostrar conocimientos en:
+
+  - autenticación segura
+  - APIs REST
+  - seguridad backend
+  - manejo de usuarios
+  - PostgreSQL
+  - documentación de APIs
+  - testing
 
 ## 🚀 Caracteristicas
 ### ​✅​ Autenticacion
@@ -10,18 +20,33 @@ API de autenticación segura desarrollada con Django REST Framework, enfocada en
 - Refresh tokens
 - Verificacion de email
 - Reset de contraseña
+- Cambio de contraseña
+- Elimincacion de cuenta
+- Sistema de roles (`admin`, `user`)
+- Proteccion de rutas privadas
 
 ### 🔐 Seguridad
 - Hash seguro de contraseñas
-- Roles y permisos
-- Protección con JWT
-- Tokens blacklist
+- Autenticación JWT con Simple JWT
+- Blacklist de tokens
+- Rate limiting / throttling
 - Variables de entorno con `.env`
+- Validación de contraseñas
+- Protección de endpoints privados
+- Logging de eventos de autenticación
 
 ### 👤 Gestión de usuarios
-- Usuarios personalizados
-- Roles (`admin`, `user`)
-- Protección de rutas privadas
+- Modelo de usuario personalizado
+- Perfil de usuario autenticado
+- Edición de perfil
+- Búsqueda y filtrado de usuarios
+- Paginación
+- Roles y permisos
+
+### 📄 Documentación
+- Documentación automática con Swagger UI
+- OpenAPI Schema
+- Testing de endpoints desde navegador
 
 ## 🛠️ Tecnologías
 
@@ -30,6 +55,8 @@ API de autenticación segura desarrollada con Django REST Framework, enfocada en
 - Django REST Framework
 - PostgreSQL
 - JWT (SimpleJWT)
+- drf-spectacular
+- Swagger UI
 - SMTP Gmail
 - python-decouple
 
@@ -39,30 +66,60 @@ API de autenticación segura desarrollada con Django REST Framework, enfocada en
 secure_auth_api/
 │
 ├── accounts/
+│   ├── migrations/
+│   ├── tests.py
+│   ├── serializers.py
+│   ├── views.py
+│   ├── models.py
+│   ├── urls.py
+│   └── permissions.py
+│
 ├── config/
+│   ├── settings.py
+│   ├── urls.py
+│   └── asgi.py
+│
+├── logs/
+│   └── security.log
+│
 ├── manage.py
 ├── requirements.txt
 ├── .env.example
+├── .gitignore
 └── README.md
 ```
 
 ## 🔑 Endpoints principales
 
-| Método | Endpoint                                | Descripción     |
-| ------ | --------------------------------------- | --------------- |
-| POST   | `/api/register/`                        | Registro        |
-| POST   | `/api/login/`                           | Login           |
-| POST   | `/api/logout/`                          | Logout          |
-| POST   | `/api/token/refresh/`                   | Refresh token   |
-| GET    | `/api/profile/`                         | Perfil usuario  |
-| POST   | `/api/request-password-reset/`          | Solicitar reset |
-| POST   | `/api/reset-password/<uidb64>/<token>/` | Reset password  |
-| GET    | `/api/verify-email/<token>/`            | Verificar email |
+| Método | Endpoint                                | Descripción            |
+| ------ | --------------------------------------- | ---------------------- |
+| POST   | `/api/register/`                        | Registro de usuarios   |
+| POST   | `/api/login/`                           | Inicio de sesión       |
+| POST   | `/api/logout/`                          | Cierre de sesión       |
+| POST   | `/api/token/refresh/`                   | Renovar access token   |
+| GET    | `/api/profile/`                         | Obtener perfil         |
+| PATCH  | `/api/profile/update/`                  | Editar perfil          |
+| POST   | `/api/change-password/`                 | Cambiar contraseña     |
+| DELETE | `/api/delete-account/`                  | Eliminar cuenta        |
+| POST   | `/api/request-password-reset/`          | Solicitar reset        |
+| POST   | `/api/reset-password/<uidb64>/<token>/` | Restablecer contraseña |
+| GET    | `/api/verify-email/<uidb64>/<token>/`   | Verificar email        |
+| GET    | `/api/users/`                           | Listar usuarios        |
 
 ## 📌 Estado del proyecto
 
   ⚠️​ EN DESARROLLO ACTIVO!!! ⚠️​
 
+
+## 📄 Documentación Swagger
+Iniciar servidor
+```bash
+http://127.0.0.1:8000/api/docs/
+```
+Schema OpenAPI
+```bash
+http://127.0.0.1:8000/api/schema/
+```
 
 ## ⚙️ Instalación
 ###  Clonar repositorio
@@ -73,15 +130,14 @@ pip install -r requirements.txt
 ```
 
 ### Entorno virtual
-```bash
-python -m venv venv
-```
 #### Windows
 ```bash
+python -m venv venv
 venv\Scripts\activate
 ```
 #### Linux/Mac
 ```bash
+python3 -m venv venv
 source venv/bin/activate
 ```
 
@@ -90,8 +146,41 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+### Configurar variables de entorno
+```bash
+SECRET_KEY=your_secret_key
+
+DEBUG=True
+
+DB_NAME=secure_auth_db
+DB_USER=postgres
+DB_PASSWORD=your_password
+DB_HOST=localhost
+DB_PORT=5432
+
+EMAIL_HOST_USER=your_email@gmail.com
+EMAIL_HOST_PASSWORD=your_app_password
+```
+
+### Aplicar migraciones
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+## 🧪 Testing
+Test automaticos de (register, login y profile)
+```bash
+python manage.py test
+```
 ### Ejecutar servidor
 ```bash
 python manage.py runserver
 ```
+## 📈 Objetivos del Proyecto
+- Aplicar buenas prácticas backend
+- Implementar autenticación segura
+- Fortalecer conocimientos en APIs REST
+- Preparar el proyecto para producción
+
 
