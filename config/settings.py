@@ -232,16 +232,8 @@ LOGGING = {
 
     'handlers': {
 
-        'file': {
-
-            'level': 'INFO',
-
-            'class': 'logging.FileHandler',
-
-            'filename': os.path.join(
-                BASE_DIR,
-                'logs/security.log'
-            ),
+        'console': {
+            'class': 'logging.StreamHandler',
         },
     },
 
@@ -249,7 +241,7 @@ LOGGING = {
 
         'security': {
 
-            'handlers': ['file'],
+            'handlers': ['console'],
 
             'level': 'INFO',
 
