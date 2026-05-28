@@ -1,6 +1,6 @@
 # 🔐 Secure Authentication API
 
-API de autenticación segura desarrollada con Django REST Framework enfocada en buenas prácticas backend, autenticación JWT, seguridad y gestión de usuarios.
+API REST segura y profesional desarrollada con Django y Django REST Framework, enfocada en autenticación avanzada, autorización basada en roles y buenas prácticas de seguridad.
 
 Diseñada como un proyecto backend profesional para demostrar conocimientos en:
 
@@ -11,6 +11,15 @@ Diseñada como un proyecto backend profesional para demostrar conocimientos en:
   - PostgreSQL
   - documentación de APIs
   - testing
+  - despliegue en producción
+
+## 🌍 Deploy en producción
+### 🚀 API Online
+https://secure-auth-api-mvmb.onrender.com
+### 📄 Swagger Documentation
+https://secure-auth-api-mvmb.onrender.com/api/docs/
+### 📘 ReDoc Documentation
+https://secure-auth-api-mvmb.onrender.com/api/redoc/
 
 ## 🚀 Caracteristicas
 ### ​✅​ Autenticacion
@@ -34,6 +43,8 @@ Diseñada como un proyecto backend profesional para demostrar conocimientos en:
 - Validación de contraseñas
 - Protección de endpoints privados
 - Logging de eventos de autenticación
+- configuracion segura para producción
+- PostgreSQL en la nube
 
 ### 👤 Gestión de usuarios
 - Modelo de usuario personalizado
@@ -46,6 +57,7 @@ Diseñada como un proyecto backend profesional para demostrar conocimientos en:
 ### 📄 Documentación
 - Documentación automática con Swagger UI
 - OpenAPI Schema
+- ReDoc Documentation
 - Testing de endpoints desde navegador
 
 ## 🛠️ Tecnologías
@@ -72,15 +84,19 @@ secure_auth_api/
 │   ├── views.py
 │   ├── models.py
 │   ├── urls.py
-│   └── permissions.py
+│   ├── permissions.py
+│   └── throttles.py
 │
 ├── config/
 │   ├── settings.py
 │   ├── urls.py
+│   ├── wsgi.py
 │   └── asgi.py
 │
 ├── logs/
 │   └── security.log
+│
+├── staticfiles/
 │
 ├── manage.py
 ├── requirements.txt
@@ -106,13 +122,11 @@ secure_auth_api/
 | GET    | `/api/verify-email/<uidb64>/<token>/`   | Verificar email        |
 | GET    | `/api/users/`                           | Listar usuarios        |
 
-## 📌 Estado del proyecto
-
-  ⚠️​ EN DESARROLLO ACTIVO!!! ⚠️​
-
+​
 
 ## 📄 Documentación Swagger
-Iniciar servidor
+### Desarrollo Local
+#### Swagger UI
 ```bash
 http://127.0.0.1:8000/api/docs/
 ```
@@ -129,7 +143,7 @@ cd secure-auth-api
 pip install -r requirements.txt
 ```
 
-### Entorno virtual
+### 🐍 Entorno virtual
 #### Windows
 ```bash
 python -m venv venv
@@ -141,12 +155,12 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-### Instalar dependencias
+### 📦 Instalar dependencias
 ```bash
 pip install -r requirements.txt
 ```
 
-### Configurar variables de entorno
+### ⚙️ Configurar variables de entorno
 ```bash
 SECRET_KEY=your_secret_key
 
@@ -158,8 +172,11 @@ DB_PASSWORD=your_password
 DB_HOST=localhost
 DB_PORT=5432
 
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
 EMAIL_HOST_USER=your_email@gmail.com
 EMAIL_HOST_PASSWORD=your_app_password
+EMAIL_USE_TLS=True
 ```
 
 ### Aplicar migraciones
@@ -169,7 +186,10 @@ python manage.py migrate
 ```
 
 ## 🧪 Testing
-Test automaticos de (register, login y profile)
+Test automaticos para 
+ - register
+ - login
+ - profile 
 ```bash
 python manage.py test
 ```
@@ -182,5 +202,16 @@ python manage.py runserver
 - Implementar autenticación segura
 - Fortalecer conocimientos en APIs REST
 - Preparar el proyecto para producción
+- Implementar seguridad profesional en APIs
+- Desplegar API en la nube
 
+### 👨‍💻 Autor
+Mario Andrés Cuevas Gutiérrez
 
+- GitHub:
+https://github.com/MacG-code
+
+- Email:
+macgbros@gmail.com
+# 📌 Estado del Proyecto
+✅ Proyecto funcional y desplegado en producción.
