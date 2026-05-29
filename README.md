@@ -69,15 +69,25 @@ https://secure-auth-api-mvmb.onrender.com/api/redoc/
 
 ## 🛠️ Tecnologías
 
-- Python
-- Django
-- Django REST Framework
-- PostgreSQL
-- JWT (SimpleJWT)
-- drf-spectacular
-- Swagger UI
-- SMTP Gmail
-- python-decouple
+| Tecnología            | Uso en el proyecto                               |
+| --------------------- | ------------------------------------------------ |
+| Python                | Lenguaje principal del backend                   |
+| Django                | Framework principal del proyecto                 |
+| Django REST Framework | Construcción de la API REST                      |
+| PostgreSQL            | Base de datos relacional                         |
+| JWT (SimpleJWT)       | Autenticación basada en tokens                   |
+| drf-spectacular       | Generación de documentación OpenAPI              |
+| Swagger UI            | Documentación interactiva de la API              |
+| ReDoc                 | Visualización alternativa de documentación       |
+| Gunicorn              | Servidor WSGI para producción                    |
+| WhiteNoise            | Manejo de archivos estáticos                     |
+| SMTP Gmail            | Envío de correos electrónicos                    |
+| python-decouple       | Manejo seguro de variables de entorno            |
+| Render                | Despliegue y hosting en producción               |
+| Django Filters        | Búsqueda y filtrado de endpoints                 |
+| PostgreSQL            | Base de datos utilizada en desarrollo local      |
+| Logging               | Registro de eventos de seguridad y autenticación |
+
 
 ##  📂 Estructura del proyecto
 
