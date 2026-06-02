@@ -20,13 +20,21 @@ Diseñada como un proyecto backend profesional para demostrar conocimientos en:
   - testing
   - despliegue en producción
 
-## 🌍 Deploy en producción
 ### 🚀 API Online
-https://secure-auth-api-mvmb.onrender.com
+
+🔗 [Abrir API](https://secure-auth-api-mvmb.onrender.com)
+
 ### 📄 Swagger Documentation
-https://secure-auth-api-mvmb.onrender.com/api/docs/
+
+🔗 [Abrir Swagger UI](https://secure-auth-api-mvmb.onrender.com/api/docs/)
+
+![Swagger UI](docs/SchemaSwagger.jpeg)
+
 ### 📘 ReDoc Documentation
-https://secure-auth-api-mvmb.onrender.com/api/redoc/
+
+🔗 [Abrir ReDoc](https://secure-auth-api-mvmb.onrender.com/api/redoc/)
+
+![ReDoc](docs/ReDoc.jpeg)
 
 ## 🚀 Caracteristicas
 ### ​✅​ Autenticacion
@@ -230,5 +238,5 @@ https://github.com/MacG-code
 
 - Email:
 macgbros@gmail.com
-# 📌 Estado del Proyecto
+## 📌 Estado del Proyecto
 ✅ Proyecto funcional y desplegado en producción.
