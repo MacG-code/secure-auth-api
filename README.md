@@ -237,6 +237,7 @@ Mario Andrés Cuevas Gutiérrez
 https://github.com/MacG-code
 
 - Email:
-macgbros@gmail.com
+macgcode8@gmail.com
+
 ## 📌 Estado del Proyecto
 ✅ Proyecto funcional y desplegado en producción.
